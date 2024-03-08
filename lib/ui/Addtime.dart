@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/menu/menulist.dart';
+import 'package:flutter_application_1/ui/Addmedicine.dart';
+import 'package:flutter_application_1/ui/freq.dart';
 
 class Addtime extends StatefulWidget {
   const Addtime({super.key});
@@ -9,6 +12,38 @@ class Addtime extends StatefulWidget {
 }
 
 class _AddtimeState extends State<Addtime> {
+  final CollectionReference timeCollection =
+      FirebaseFirestore.instance.collection('medicine');
+  final String userId = 'user_id';
+
+Future<void> addPickedTime(TimeOfDay pickedTime) async {
+    // Check if the document already exists
+    final DocumentSnapshot<Object?> document =
+        await timeCollection.doc(userId).get();
+
+    if (document.exists) {
+      // If the document exists, update the existing document
+      return timeCollection.doc(userId).update({
+        'selectedTimes': FieldValue.arrayUnion([
+          {
+            'hour': pickedTime.hour,
+            'minute': pickedTime.minute,
+          },
+        ]),
+      });
+    } else {
+      // If the document doesn't exist, create a new document
+      return timeCollection.doc(userId).set({
+        'selectedTimes': [
+          {
+            'hour': pickedTime.hour,
+            'minute': pickedTime.minute,
+          },
+        ],
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -36,7 +71,7 @@ class _AddtimeState extends State<Addtime> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const menulist()),
+              MaterialPageRoute(builder: (context) => const frequency()),
             );
           },
         ),
@@ -67,13 +102,15 @@ class _AddtimeState extends State<Addtime> {
                           );
                         },
                       );
-                       if (pickedTime != null && pickedTime.minute <= 59) {
+                      if (pickedTime != null && pickedTime.minute <= 59) {
                         setState(() {
                           selectedTimes[index] = pickedTime;
                         });
                       }
                     },
-                    child: Container(width: 130,height: 65,
+                    child: Container(
+                      width: 130,
+                      height: 65,
                       padding: const EdgeInsets.fromLTRB(21, 8, 2, 5),
                       margin: const EdgeInsets.symmetric(vertical: 5),
                       decoration: BoxDecoration(
@@ -124,6 +161,10 @@ class _AddtimeState extends State<Addtime> {
                       selectedTimes.add(pickedTime);
                     });
                   }
+
+                  if (selectedTimes.isNotEmpty) {
+                    await addPickedTime(selectedTimes.last);
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
@@ -137,7 +178,9 @@ class _AddtimeState extends State<Addtime> {
                   children: [
                     Icon(Icons.add,
                         color: Colors.white), // Add the desired icon
-                    SizedBox(width:10), // Adjust the spacing between the icon and text
+                    SizedBox(
+                        width:
+                            10), // Adjust the spacing between the icon and text
                     Text(
                       'ตั้งเวลาแจ้งเตือน',
                       style: TextStyle(
@@ -186,11 +229,12 @@ class _AddtimeState extends State<Addtime> {
                     ),
                   ),
                   onPressed: () {
-                    // Navigator.push(context,
-                    //     CupertinoPageRoute(builder: (context) {
-                    //       return MainMenu();
-                    //     }));
-                    // Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const frequency(),
+                      ),
+                    );
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -231,12 +275,12 @@ class _AddtimeState extends State<Addtime> {
                       },
                     ),
                   ),
-                  onPressed: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //       builder: (context) => AddTimeAlertMedicine(halo)),
-                    // );
+                  onPressed: () async {
+                    // Assuming you want to add the last picked time
+                    if (selectedTimes.isNotEmpty) {
+                      await addPickedTime(selectedTimes.last);
+                    }
+                    // Add any other navigation logic or actions you need
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
