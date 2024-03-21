@@ -5,45 +5,26 @@ import 'package:flutter_application_1/ui/Addmedicine.dart';
 import 'package:flutter_application_1/ui/freq.dart';
 
 class Addtime extends StatefulWidget {
-  const Addtime({super.key});
+  final String nameMedicine;
+  final String medicineQuantity;
+  final String selectedDropdownValue;
+  final String selectedFrequencyText;
+  final String startDate;
+  const Addtime(
+      {Key? key,
+    required this.nameMedicine,
+    required this.medicineQuantity,
+    required this.selectedDropdownValue,
+    required this.selectedFrequencyText,
+    required this.startDate,})
+      : super(key: key);
 
   @override
   State<Addtime> createState() => _AddtimeState();
 }
 
 class _AddtimeState extends State<Addtime> {
-  final CollectionReference timeCollection =
-      FirebaseFirestore.instance.collection('medicine');
-  final String userId = 'user_id';
-
-Future<void> addPickedTime(TimeOfDay pickedTime) async {
-    // Check if the document already exists
-    final DocumentSnapshot<Object?> document =
-        await timeCollection.doc(userId).get();
-
-    if (document.exists) {
-      // If the document exists, update the existing document
-      return timeCollection.doc(userId).update({
-        'selectedTimes': FieldValue.arrayUnion([
-          {
-            'hour': pickedTime.hour,
-            'minute': pickedTime.minute,
-          },
-        ]),
-      });
-    } else {
-      // If the document doesn't exist, create a new document
-      return timeCollection.doc(userId).set({
-        'selectedTimes': [
-          {
-            'hour': pickedTime.hour,
-            'minute': pickedTime.minute,
-          },
-        ],
-      });
-    }
-  }
-
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   @override
   void initState() {
     super.initState();
@@ -51,6 +32,33 @@ Future<void> addPickedTime(TimeOfDay pickedTime) async {
 
   TimeOfDay selectedTime = TimeOfDay.now();
   List<TimeOfDay> selectedTimes = [];
+  Future<void> saveDataToFirebase() async {
+    CollectionReference medications =_firestore.collection('medicine');
+  List<Map<String, dynamic>> timesList = selectedTimes
+      .map((time) => {
+            'hour': time.hour,
+            'minute': time.minute,
+          })
+      .toList();
+    Map<String, dynamic> documentData = {
+      'ชื่อยา': widget.nameMedicine,
+      'ปริมาณยาที่ทานต่อครั้ง': widget.medicineQuantity,
+      'หน่วยยา': widget.selectedDropdownValue,
+      'ความถี่': widget.selectedFrequencyText,
+      // 'เลือกวันของสัปดาห์': widget.selectedDays,
+      // 'จำนวนของช่วง': widget.selectedValue,
+      // 'ช่วง': widget.selectedType,
+      'วันที่เริ่มทาน': widget.startDate,
+      'เวลาแจ้งเตือน': timesList,
+    };
+    try {
+      await medications.add(documentData);
+      print('Data added to Firestore successfully!');
+    } catch (e) {
+      print('Error adding data to Firestore: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,10 +77,7 @@ Future<void> addPickedTime(TimeOfDay pickedTime) async {
             color: Colors.white,
           ),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const frequency()),
-            );
+            Navigator.of(context).pop();
           },
         ),
       ),
@@ -85,6 +90,9 @@ Future<void> addPickedTime(TimeOfDay pickedTime) async {
               'เวลาแจ้งเตือน',
               style: TextStyle(fontSize: 24, fontFamily: "SukhumvitSet-Medium"),
             ),
+                    Text('ชื่อยา: ${widget.nameMedicine}'),
+                    Text('ปริมาณยา: ${widget.medicineQuantity}'),
+                     Text('หน่วย: ${widget.selectedDropdownValue}'),
             for (int index = 0; index < selectedTimes.length; index++)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -161,10 +169,6 @@ Future<void> addPickedTime(TimeOfDay pickedTime) async {
                       selectedTimes.add(pickedTime);
                     });
                   }
-
-                  if (selectedTimes.isNotEmpty) {
-                    await addPickedTime(selectedTimes.last);
-                  }
                 },
                 style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
@@ -192,6 +196,7 @@ Future<void> addPickedTime(TimeOfDay pickedTime) async {
                   ],
                 ),
               ),
+              
             ),
           ],
         ),
@@ -229,12 +234,7 @@ Future<void> addPickedTime(TimeOfDay pickedTime) async {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const frequency(),
-                      ),
-                    );
+                    Navigator.of(context).pop();
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -276,11 +276,8 @@ Future<void> addPickedTime(TimeOfDay pickedTime) async {
                     ),
                   ),
                   onPressed: () async {
-                    // Assuming you want to add the last picked time
-                    if (selectedTimes.isNotEmpty) {
-                      await addPickedTime(selectedTimes.last);
-                    }
-                    // Add any other navigation logic or actions you need
+                    await saveDataToFirebase();
+                    
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,

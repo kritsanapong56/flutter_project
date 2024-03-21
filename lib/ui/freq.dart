@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,14 @@ StreamController<List<String>> selectedDaysController =
     StreamController<List<String>>.broadcast();
 
 class frequency extends StatefulWidget {
-  const frequency({super.key});
+  final String nameMedicine;
+  final String medicineQuantity;
+  final String selectedDropdownValue;
+  const frequency(
+      {super.key,
+      required this.nameMedicine,
+      required this.medicineQuantity,
+      required this.selectedDropdownValue});
 
   @override
   State<frequency> createState() => _frequencyState();
@@ -24,8 +32,8 @@ class DateSelector extends StatefulWidget {
 }
 
 class _DateSelectorState extends State<DateSelector> {
-  int _selectedValue = 1;
-  String _selectedType = 'Day';
+  final int _selectedValue = 1;
+  final String _selectedType = 'Day';
 
   @override
   Widget build(BuildContext context) {
@@ -72,13 +80,25 @@ class _DateSelectorState extends State<DateSelector> {
 }
 
 class _frequencyState extends State<frequency> {
-  var _stxtHBD = "";
-  final txtHBDController = TextEditingController();
+  TextEditingController txtHBDController = TextEditingController();
+  TextEditingController NameMedicineController = TextEditingController();
+  TextEditingController MedicineQuantity = TextEditingController();
+  String selectedDropdownValue = "";
   final selectfrequencyController = TextEditingController();
   int selectedNumber = 1;
   final values = List.filled(7, true);
   int _selectedValue = 1;
   String _selectedType = 'วัน';
+  List<bool> selectedDays = List.generate(7, (index) => false);
+  bool showWeekdaySelector = false;
+  bool isChecked = false;
+  bool showSecondColumn = false;
+  int selectedRadio = 0;
+  int selectedValue = 1;
+
+  List<Object> get props =>
+      [NameMedicineController, MedicineQuantity, selectedDropdownValue];
+
   final List<DropdownMenuItem<String>> _dropdownMenuItems = [
     const DropdownMenuItem(
         value: 'วัน',
@@ -191,8 +211,8 @@ class _frequencyState extends State<frequency> {
               fontFamily: 'SukhumvitSet-Bold',
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: const Color.fromRGBO(88, 135, 255, 1)),
-          paddingMonthHeader: EdgeInsets.all(10),
+              color: Color.fromRGBO(88, 135, 255, 1)),
+          paddingMonthHeader: const EdgeInsets.all(10),
           sizeArrow: 40,
           colorArrowPrevious: const Color.fromRGBO(88, 135, 255, 1),
           colorArrowNext: const Color.fromRGBO(88, 135, 255, 1),
@@ -232,7 +252,6 @@ class _frequencyState extends State<frequency> {
         lastDate: DateTime(yearCurrent),
       ).then((date) {
         setState(() {
-          _stxtHBD = DateFormat('yyyy-MM-dd').format(date!);
           var strDay = DateFormat('dd/MM/yyyy').format(date!);
           txtHBDController.text = strDay;
           FocusScopeNode currentFocus = FocusScope.of(context);
@@ -244,14 +263,6 @@ class _frequencyState extends State<frequency> {
     });
   }
 
-  List<bool> selectedDays = List.filled(7, false);
-  bool showWeekdaySelector = false;
-  bool isChecked = false;
-  bool showSecondColumn = false;
-  int selectedRadio = 0;
-  int selectedValue = 1;
-  String selectedType = 'Day';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -260,10 +271,7 @@ class _frequencyState extends State<frequency> {
         backgroundColor: const Color.fromRGBO(88, 135, 255, 1),
         title: const Text(
           "ความถี่การทานยา",
-          style: TextStyle(
-              fontSize: 25,
-              
-              fontFamily: 'SukhumvitSet-Bold'),
+          style: TextStyle(fontSize: 25, fontFamily: 'SukhumvitSet-Bold'),
         ),
         leading: IconButton(
           icon: const ImageIcon(
@@ -272,10 +280,7 @@ class _frequencyState extends State<frequency> {
             color: Colors.black,
           ),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const Addmedicine()),
-            );
+            Navigator.of(context).pop();
           },
         ),
       ),
@@ -417,7 +422,6 @@ class _frequencyState extends State<frequency> {
                   shortWeekdays: const ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'],
                 ),
               ),
-
             if (selectedRadio == 2)
               Container(
                 width: 380,
@@ -456,7 +460,8 @@ class _frequencyState extends State<frequency> {
                   const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("ช่วงวัน",
+                      Text(
+                        "ช่วงวัน",
                         style: TextStyle(
                           fontSize: 21.0,
                           fontFamily: 'SukhumvitSet-Medium',
@@ -473,7 +478,8 @@ class _frequencyState extends State<frequency> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   const Padding(padding: EdgeInsets.only(bottom: 10)),
-                  const Text('เลือกช่วงวัน',
+                  const Text(
+                    'เลือกช่วงวัน',
                     style:
                         TextStyle(fontWeight: FontWeight.normal, fontSize: 25),
                   ),
@@ -512,7 +518,8 @@ class _frequencyState extends State<frequency> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("วันที่เลือก: ${getSelectedDate()}",
+                        Text(
+                          "วันที่เลือก: ${getSelectedDate()}",
                           style: const TextStyle(fontSize: 24),
                         ),
                         const SizedBox(width: 20),
@@ -521,16 +528,17 @@ class _frequencyState extends State<frequency> {
                   ),
                 ],
               ),
-
             Row(
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
-                Expanded(flex: 10,
+                Expanded(
+                  flex: 10,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
-                        margin:const EdgeInsets.only(top: 20, left: 10, right: 10),
+                        margin:
+                            const EdgeInsets.only(top: 20, left: 10, right: 10),
                         padding: const EdgeInsets.only(left: 15.0, right: 15.0),
                         width: double.maxFinite,
                         child: Column(
@@ -545,6 +553,9 @@ class _frequencyState extends State<frequency> {
                                 color: Colors.black,
                               ),
                             ),
+                            Text('ชื่อยา: ${widget.nameMedicine}'),
+                            Text('ปริมาณยา: ${widget.medicineQuantity}'),
+                            Text('หน่วย: ${widget.selectedDropdownValue}'),
                             const SizedBox(
                                 height:
                                     10), // Adjust the spacing between "เริ่มต้น" and TextField
@@ -624,11 +635,7 @@ class _frequencyState extends State<frequency> {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const Addmedicine()),
-                    );
+                    Navigator.of(context).pop();
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -671,56 +678,40 @@ class _frequencyState extends State<frequency> {
                       },
                     ),
                   ),
-                  onPressed: () async {
-                    CollectionReference collRef =
-                        FirebaseFirestore.instance.collection('medicine');
-                    String frequency = '';
-                    switch (selectedRadio) {
-                      case 1:
-                        frequency = 'ประจำวัน';
-                        collRef.add({
-                          'ความถี่ในการทานยา': frequency,
-                          'วันที่เริ่มทาน': txtHBDController.text,
-                        });
-                        break;
-                      case 2:
-                        frequency = 'วันของสัปดาห์';
-                        collRef.add({
-                          'ความถี่ในการทานยา': frequency,
-                          'วัน':getSelectedDaysString(selectedDays),
-                          'วันที่เริ่มทาน': txtHBDController.text,
-                        });
-                        break;
-                      case 3:
-                        frequency = 'ช่วงวัน';
-                        collRef.add({
-                          'ความถี่ในการทานยา': frequency,
-                          'ช่วง': _selectedType,
-                          'จำนวนของช่วง': _selectedValue,
-                          'วันที่เริ่มทาน': txtHBDController.text,
-                        });
-                        break;
+                  onPressed: () {
+                    String selectedFrequencyText = "";
+                    if (selectedRadio == 1) {
+                      selectedFrequencyText = "ประจำวัน";
+                    } else if (selectedRadio == 2) {
+                      selectedFrequencyText = "วันของสัปดาห์ : ${getSelectedDaysString(selectedDays)}";
+                    } else if (selectedRadio == 3) {
+                      selectedFrequencyText = "ช่วงวัน : ${getSelectedDate()}";
                     }
-
-                    ///ชื่อcollection
-
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const Addtime()),
+                      MaterialPageRoute(
+                        builder: (context) => Addtime(
+                          nameMedicine: widget.nameMedicine,
+                          medicineQuantity: widget.medicineQuantity,
+                          selectedDropdownValue: widget.selectedDropdownValue,
+                          // selectedDays: selectedRadio == 2 ? selectedDays : null,
+                          // selectedType: selectedRadio == 3 ? _selectedType : null,
+                          // selectedValue: selectedRadio == 3 ? _selectedValue : null,
+                          startDate: txtHBDController.text,
+                          selectedFrequencyText: selectedFrequencyText,
+                        ),
+                      ),
                     );
-                    print('เลือกข้อมูล: $selectedNumber');
                   },
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        child: const Text(
-                          "ถัดไป",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 25,
-                              fontFamily: 'SukhumvitSet-Bold'),
-                        ),
+                      Text(
+                        "ถัดไป",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 25,
+                            fontFamily: 'SukhumvitSet-Bold'),
                       ),
                     ],
                   ),

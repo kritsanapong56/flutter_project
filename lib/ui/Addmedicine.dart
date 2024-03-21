@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,17 +15,13 @@ class Addmedicine extends StatefulWidget {
 }
 
 class _Addmedicine extends State<Addmedicine> {
-  @override
-  final MedicineQuantity = TextEditingController();
-  final NameMedicineController = TextEditingController();
-  final DrugunitController = TextEditingController();
-  int _selectedIndex = -1;
-  var _selectedTimeTakeId = "0";
+  TextEditingController MedicineQuantity = TextEditingController();
+  TextEditingController NameMedicineController = TextEditingController();
+  String selectedDropdownValue = "";
+
   void initState() {
     super.initState();
   }
-
-  String selectedDropdownValue = "เลือก";
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +30,7 @@ class _Addmedicine extends State<Addmedicine> {
         centerTitle: true,
         title: const Text(
           "กรุณาเพิ่มยา",
-          style: TextStyle(
-              fontSize: 25,
-              fontFamily: 'SukhumvitSet-Bold'),
+          style: TextStyle(fontSize: 25, fontFamily: 'SukhumvitSet-Bold'),
         ),
         backgroundColor: const Color.fromRGBO(88, 135, 255, 1),
         leading: IconButton(
@@ -342,11 +335,7 @@ class _Addmedicine extends State<Addmedicine> {
                     ),
                   ),
                   onPressed: () {
-                    // Navigator.push(context,
-                    //     CupertinoPageRoute(builder: (context) {
-                    //       return MainMenu();
-                    //     }));
-                    // Navigator.pop(context);
+                    Navigator.pop(context);
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -388,20 +377,16 @@ class _Addmedicine extends State<Addmedicine> {
                     ),
                   ),
                   onPressed: () {
-                    CollectionReference collRef =
-                        FirebaseFirestore.instance.collection('medicine');
-
-                    ///ชื่อcollection
-                    collRef.add({
-                      'ชื่อยา': NameMedicineController.text,
-                      'ปริมาณยาที่ทานต่อครั้ง': MedicineQuantity.text,
-                      'หน่วยยา': selectedDropdownValue,
-                    });
+                    String nameMedicine = NameMedicineController.text;
+                    String medicineQuantity = MedicineQuantity.text;
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const frequency(),
-                      ),
+                          builder: (context) => frequency(
+                                nameMedicine: nameMedicine,
+                                medicineQuantity: medicineQuantity,
+                                selectedDropdownValue: selectedDropdownValue,
+                              )),
                     );
                   },
                   child: const Row(
@@ -424,33 +409,4 @@ class _Addmedicine extends State<Addmedicine> {
       ),
     );
   }
-    void _pushPageAddtime(BuildContext context, bool isHorizontalNavigation) {
-    Navigator.of(context, rootNavigator: !isHorizontalNavigation)
-        .push(
-      _buildAdaptivePageRoute(
-        builder: (context) => const Addtime(),
-        fullscreenDialog: !isHorizontalNavigation,
-      ),
-    )
-        .then((value) {
-      const Duration(seconds: 2);
-      // ReloadData();
-    });
-  }
-
-// Flutter will use the fullscreenDialog property to change the animation
-// and the app bar's left icon to an X instead of an arrow.
-  PageRoute<T> _buildAdaptivePageRoute<T>({
-    required WidgetBuilder builder,
-    bool fullscreenDialog = false,
-  }) =>
-      Platform.isAndroid
-          ? MaterialPageRoute(
-              builder: builder,
-              fullscreenDialog: fullscreenDialog,
-            )
-          : CupertinoPageRoute(
-              builder: builder,
-              fullscreenDialog: fullscreenDialog,
-            );
 }
