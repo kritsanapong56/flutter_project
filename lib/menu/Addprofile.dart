@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Addprofile extends StatefulWidget {
@@ -8,10 +9,11 @@ class Addprofile extends StatefulWidget {
 }
 
 class _AddprofileState extends State<Addprofile> {
+  final nameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:const Color(0xfff6f6f9),
+      backgroundColor: const Color(0xfff6f6f9),
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(88, 135, 255, 1),
@@ -67,12 +69,13 @@ class _AddprofileState extends State<Addprofile> {
                                   padding: const EdgeInsets.only(
                                       left: 15.0, right: 15.0),
                                   width: double.maxFinite,
-                                  child: const TextField(
-                                    style: TextStyle(
+                                  child: TextFormField(
+                                    style: const TextStyle(
                                         fontSize: 25.0,
                                         fontFamily: 'SukhumvitSet-Bold',
                                         color: Colors.white),
-                                    decoration: InputDecoration(
+                                    controller: nameController,
+                                    decoration: const InputDecoration(
                                         contentPadding: EdgeInsets.symmetric(
                                             vertical: 10.0, horizontal: 15),
                                         //ปรับตำแหน่งcursor เริ่มต้นในช่องข้อความ
@@ -89,7 +92,7 @@ class _AddprofileState extends State<Addprofile> {
                                             fontFamily: 'SukhumvitSet-Medium',
                                             color: Colors.white),
                                         fillColor:
-                                            Color.fromRGBO(88, 135, 255, .8)),
+                                            Color.fromRGBO(84, 164, 244, 0.8)),
                                     // fillColor: Colors.white70),
                                   ),
                                 ),
@@ -137,7 +140,7 @@ class _AddprofileState extends State<Addprofile> {
                     ),
                   ),
                   onPressed: () {
-                     Navigator.pop(context);
+                    Navigator.pop(context);
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -191,8 +194,11 @@ class _AddprofileState extends State<Addprofile> {
                   // },
 
                   onPressed: () {
-                    // ทำอะไรก็ตามที่คุณต้องการเมื่อกดปุ่ม "หน้าถัดไป"
-                    // ในตัวอย่างนี้เราจะแสดงข้อมูลที่ถูกเลือก
+                    CollectionReference collRef =
+                        FirebaseFirestore.instance.collection('name');
+                    collRef.add({
+                      'name': nameController.text,
+                    });
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

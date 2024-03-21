@@ -23,18 +23,7 @@ class _menulistState extends State<menulist> {
         title: const Text("คุณต้องการเพิ่มอะไร?",style: TextStyle(
             fontSize: 25,color: Colors.white,
             fontFamily: 'SukhumvitSet-Bold'),),
-        actions: const [
-          // IconButton(
-          //   icon: Icon(
-          //     Icons.clear,
-          //     color: Colors.black,
-          //     size: 40,
-          //   ),
-          //   onPressed: () {
-          //     Navigator.pop(context);
-          //   },
-          // ),
-        ],
+  
       ),
      body: Container(
         width: double.maxFinite,

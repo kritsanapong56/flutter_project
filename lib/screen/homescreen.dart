@@ -14,14 +14,14 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: null,
       backgroundColor: Colors.white,
       body: Container(
-        decoration: BoxDecoration(),
+        decoration: const BoxDecoration(),
         width: double.maxFinite,
         height: double.maxFinite,
-        padding: EdgeInsets.only(left: 15.0, right: 15.0),
-        margin: EdgeInsets.only(top: 100.0),
+        padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+        margin: const EdgeInsets.only(top: 100.0),
         child: Column(
           children: [
-            Center(
+            const Center(
               child: Text("ยินดีต้อนรับ",
                   style: TextStyle(
                       color: Colors.black,
@@ -29,7 +29,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       fontFamily: 'SukhumvitSet-Bold'),
                   textAlign: TextAlign.center),
             ),
-            Expanded(
+            const Expanded(
               flex: 5,
               child: Image(
                 image: AssetImage('assets/images/logo.png'),
@@ -38,18 +38,18 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               width: double.maxFinite,
               margin:
-                  EdgeInsets.only(top: 50.0, bottom: 50, left: 10, right: 10),
+                  const EdgeInsets.only(top: 50.0, bottom: 50, left: 10, right: 10),
               child: Row(
                 children: [
                   Expanded(
                     flex: 5,
                     child: Container(
-                      margin: EdgeInsets.only(right: 5),
+                      margin: const EdgeInsets.only(right: 5),
                       width: double.maxFinite,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           primary: Color(0xFFFF9671),
-                          padding: EdgeInsets.only(
+                          padding: const EdgeInsets.only(
                               top: 10, bottom: 10.0, left: 20, right: 20),
                           backgroundColor: Colors.blue,
                           shape: RoundedRectangleBorder(
@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
-                              child: Text(
+                              child: const Text(
                                 "เริ่มต้นใช้งาน",
                                 style: TextStyle(
                                     color: Colors.white,
