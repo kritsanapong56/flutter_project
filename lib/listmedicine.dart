@@ -20,28 +20,21 @@ class _listmedicineState extends State<listmedicine> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(88, 135, 255, 1),
-        leadingWidth: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            size: 40,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         title: const Text('ข้อมูลยา',
             style: TextStyle(
                 fontFamily: 'SukhumvitSet-Bold',
                 fontSize: 22,
                 fontWeight: FontWeight.w500)),
-        leading: Container(),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.clear,
-              color: Colors.black,
-              size: 40,
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const menulist()),
-              );
-            },
-          ),
-        ],
+        actions: const [],
       ),
       body: Container(
         width: double.maxFinite,
@@ -50,7 +43,8 @@ class _listmedicineState extends State<listmedicine> {
           stream: user,
           builder: (
             BuildContext context,
-            AsyncSnapshot<QuerySnapshot> snapshot,) {
+            AsyncSnapshot<QuerySnapshot> snapshot,
+          ) {
             if (snapshot.hasError) {
               return const Text('Something went wrong');
             }
@@ -58,59 +52,73 @@ class _listmedicineState extends State<listmedicine> {
               return const Text('Loading');
             }
             final data = snapshot.requireData;
+
+            if (data.size == 0) {
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'ไม่มีข้อมูล',
+                      style: TextStyle(fontSize: 25),
+                    ),
+                  ],
+                ),
+              );
+            }
             return ListView.builder(
               itemCount: data.size,
               itemBuilder: (context, index) {
-                return Card(
-                  elevation: 5,
-                  margin: const EdgeInsets.all(10),
-                  child: ListTile(
-                    title: Text(
-                      '${data.docs[index]['ชื่อยา']} ${data.docs[index]['ปริมาณยาที่ทานต่อครั้ง']} ${data.docs[index]['หน่วยยา']} ',
-                      style: const TextStyle(fontSize: 25),
-                    ),
-                    subtitle: Text(
-                      'เริ่มทาน ${data.docs[index]['วันที่เริ่มทาน']} ความถี่ ${data.docs[index] ['ความถี่']}',),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // IconButton(
-                        //   icon: const Icon(Icons.edit),
-                        //   onPressed: () {
-                        //     showEditDialog(context, data.docs[index]);
-                        //   },
-                        // ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext dialogContext) {
-                                return AlertDialog(
-                                  title: const Text('คุณต้องการลบยาหรือไม่'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(dialogContext)
-                                            .pop(); // Close the dialog
-                                      },
-                                      child: const Text('ยกเลิก'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        data.docs[index].reference.delete();
-                                        Navigator.of(dialogContext)
-                                            .pop(); // Close the dialog
-                                      },
-                                      child: const Text('ตกลง'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ],
+                return GestureDetector(
+                  onTap: () {
+                    showDetailDialog(context, data.docs[index]);
+                  },
+                  child: Card(
+                    elevation: 5,
+                    margin: const EdgeInsets.all(15),
+                    child: ListTile(
+                      title: Text(
+                        '${data.docs[index]['ชื่อยา']} ${data.docs[index]['ปริมาณยาที่ทานต่อครั้ง']} ${data.docs[index]['หน่วยยา']} ',
+                        style: const TextStyle(fontSize: 25),
+                      ),
+                      subtitle: Text(
+                        'เริ่มทาน ${data.docs[index]['วันที่เริ่มทาน']} ความถี่ ${data.docs[index]['เวลาแจ้งเตือน']}',
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext dialogContext) {
+                                  return AlertDialog(
+                                    title: const Text('คุณต้องการลบยาหรือไม่'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(dialogContext)
+                                              .pop(); // Close the dialog
+                                        },
+                                        child: const Text('ยกเลิก'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          data.docs[index].reference.delete();
+                                          Navigator.of(dialogContext)
+                                              .pop(); // Close the dialog
+                                        },
+                                        child: const Text('ตกลง'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -122,55 +130,46 @@ class _listmedicineState extends State<listmedicine> {
     );
   }
 
-void showEditDialog(BuildContext context, DocumentSnapshot document) {
-  TextEditingController newNameController = TextEditingController();
-  TextEditingController newAmountController = TextEditingController();
-  newNameController.text = document['ชื่อยา'];
-  newAmountController.text = document['ปริมาณยาที่ทานต่อครั้ง'].toString();
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Edit Medication'),
-        content: Column(
-          children: [
-            TextField(
-              controller: newNameController,
-              decoration: const InputDecoration(labelText: 'New Medication Name'),
-            ),
-            TextField(
-              controller: newAmountController,
-              decoration: const InputDecoration(labelText: 'New Amount of Pills'),
+  void showDetailDialog(BuildContext context, DocumentSnapshot document) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text('รายละเอียดยา: ยา${document['ชื่อยา']}'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                  'ปริมาณยาที่ทานต่อครั้ง: ${document['ปริมาณยาที่ทานต่อครั้ง']} ${document['หน่วยยา']}'),
+              Text('ความถี่: ${document['ความถี่']}'),
+              Text('เริ่มทานเมื่อ: ${document['วันที่เริ่มทาน']}'),
+              Text('เวลาทานยา: ${document['เวลาแจ้งเตือน']}'),
+              // เพิ่มรายละเอียดเพิ่มเติมได้ตามต้องการ
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Close the dialog
+              },
+              child: const Text('ปิด'),
             ),
           ],
-        ),
-        actions: [
-          TextButton(
-            child: const Text('Cancel'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
-            child: const Text('Save'),
-            onPressed: () {
-              document.reference.update({
-                'ชื่อยา': newNameController.text,
-                'ปริมาณยาที่ทานต่อครั้ง': int.parse(newAmountController.text),
-              });
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
   Future<void> deleteData(String documentId) async {
-
-      print('Error deleting document:');
+    try {
+      await FirebaseFirestore.instance
+          .collection('medicine')
+          .doc(documentId)
+          .delete();
+    } catch (e) {
+      print('Error deleting document: $e');
       // Handle errors as needed
-    
+    }
   }
 }

@@ -16,143 +16,156 @@ class _menulistState extends State<menulist> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:const Color(0xfff6f6f9),
+      backgroundColor: const Color(0xfff6f6f9),
       appBar:AppBar(
-        centerTitle: true,
         backgroundColor: const Color.fromRGBO(88, 135, 255, 1),
-        title: const Text("คุณต้องการเพิ่มอะไร?",style: TextStyle(
-            fontSize: 25,color: Colors.white,
-            fontFamily: 'SukhumvitSet-Bold'),),
-  
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            size: 40,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        centerTitle: true,
+        title: const Text(
+          "คุณต้องการเพิ่มอะไร?",
+          style: TextStyle(
+            fontSize: 25,
+            color: Colors.white,
+            fontFamily: 'SukhumvitSet-Bold',
+          ),
+        ),
+        actions: const [],
       ),
-     body: Container(
+      body: Container(
         width: double.maxFinite,
         height: double.maxFinite,
         margin: EdgeInsets.only(top: 30.0),
-        child: ListView(
-            children: [
-              InkWell(
-                onTap: (){
-                  _pushPageAddProfile(context,false);
-                },
-                child:
-                Container(
-                  padding: const EdgeInsets.only(left: 20,right: 20,top:10),
-                  child:  const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Image(
-                        image: AssetImage('assets/images/profile.png'),
-                        height: 80,
-                        width: 80,
-                      ),
-                      SizedBox(width: 10,),
-                      Expanded(
-                        flex: 5,
-                        child:  Text(
-                            "เพิ่มข้อมูลโปรไฟล์",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 25.0,
-                                fontFamily: 'SukhumvitSet-Bold'),
-                            textAlign: TextAlign.start
-                        ),
-                      ),
-
-                    ],
+        child: ListView(children: [
+          InkWell(
+            onTap: () {
+              _pushPageAddProfile(context, false);
+            },
+            child: Container(
+              padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Image(
+                    image: AssetImage('assets/images/profile.png'),
+                    height: 80,
+                    width: 80,
                   ),
-                ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    flex: 5,
+                    child: Text("เพิ่มข้อมูลโปรไฟล์",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 25.0,
+                            fontFamily: 'SukhumvitSet-Bold'),
+                        textAlign: TextAlign.start),
+                  ),
+                ],
               ),
+            ),
+          ),
 
-              InkWell(
-                  onTap: (){
-                    _pushPageReport(context,false);
-                  },
-                  child:
-                  Container(
-                        padding: const EdgeInsets.only(left: 20,right: 20,top:10),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Image(
-                              image: AssetImage('assets/images/report_medicine.png'),
-                              height: 80,
-                              width: 80,
-                            ),
-                            SizedBox(width: 10,),
-                            Expanded(
-                              flex: 5,
-                              child:  Text(
-                                  "รายงานการทานยา",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 25.0,
-                                      fontFamily: 'SukhumvitSet-Bold'),
-                                  textAlign: TextAlign.start
-                              ),
-                            ),
-
-                          ],
-                        ),
-                      ),
+          InkWell(
+            onTap: () {
+              _pushPageReport(context, false);
+            },
+            child: Container(
+              padding: const EdgeInsets.only(left: 25, right: 20, top: 30),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Image(
+                    image: AssetImage('assets/images/report_medicine.png'),
+                    height: 80,
+                    width: 80,
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    flex: 5,
+                    child: Text("ประวัติการทานยา",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 25.0,
+                            fontFamily: 'SukhumvitSet-Bold'),
+                        textAlign: TextAlign.start),
+                  ),
+                ],
               ),
+            ),
+          ),
 
+          ////////////////////////ข้อมูลยา/////////////////////////////////
+          // InkWell(
+          //     onTap: (){
+          //       _pushPageListMedicine(context,false);
+          //     },
+          //     child:  Container(
+          //           padding: const EdgeInsets.only(left: 20,right: 20,top:10),
+          //           child:  const Row(
+          //             mainAxisAlignment: MainAxisAlignment.center,
+          //             children: <Widget>[
+          //               Image(
+          //                 image: AssetImage('assets/images/info_medicine.png'),
+          //                 height: 80,
+          //                 width: 80,
+          //               ),
+          //               SizedBox(width: 10,),
+          //               Expanded(
+          //                 flex: 5,
+          //                 child:  Text(
+          //                     "ข้อมูลยา",
+          //                     style: TextStyle(
+          //                         color: Colors.black,
+          //                         fontSize: 25.0,
+          //                         fontFamily: 'SukhumvitSet-Bold'),
+          //                     textAlign: TextAlign.start
+          //                 ),
+          //               ),
 
-   ////////////////////////ข้อมูลยา/////////////////////////////////           
-              // InkWell(
-              //     onTap: (){
-              //       _pushPageListMedicine(context,false);
-              //     },
-              //     child:  Container(
-              //           padding: const EdgeInsets.only(left: 20,right: 20,top:10),
-              //           child:  const Row(
-              //             mainAxisAlignment: MainAxisAlignment.center,
-              //             children: <Widget>[
-              //               Image(
-              //                 image: AssetImage('assets/images/info_medicine.png'),
-              //                 height: 80,
-              //                 width: 80,
-              //               ),
-              //               SizedBox(width: 10,),
-              //               Expanded(
-              //                 flex: 5,
-              //                 child:  Text(
-              //                     "ข้อมูลยา",
-              //                     style: TextStyle(
-              //                         color: Colors.black,
-              //                         fontSize: 25.0,
-              //                         fontFamily: 'SukhumvitSet-Bold'),
-              //                     textAlign: TextAlign.start
-              //                 ),
-              //               ),
-
-              //             ],
-              //           ),
-              //         ),
-              // )
-            ]),
+          //             ],
+          //           ),
+          //         ),
+          // )
+        ]),
       ),
     );
   }
-    void _pushPageAddProfile(BuildContext context, bool isHorizontalNavigation) {
-    Navigator.of(context, rootNavigator: !isHorizontalNavigation).push(
+
+  void _pushPageAddProfile(BuildContext context, bool isHorizontalNavigation) {
+    Navigator.of(context, rootNavigator: !isHorizontalNavigation)
+        .push(
       _buildAdaptivePageRoute(
         builder: (context) => const Addprofile(),
         fullscreenDialog: !isHorizontalNavigation,
       ),
-    ).then((value) {
+    )
+        .then((value) {
       const Duration(seconds: 2);
       // ReloadData();
     });
   }
 
-    void _pushPageReport(BuildContext context, bool isHorizontalNavigation) {
-    Navigator.of(context, rootNavigator: !isHorizontalNavigation).push(
+  void _pushPageReport(BuildContext context, bool isHorizontalNavigation) {
+    Navigator.of(context, rootNavigator: !isHorizontalNavigation)
+        .push(
       _buildAdaptivePageRoute(
         builder: (context) => const Report(),
         fullscreenDialog: !isHorizontalNavigation,
       ),
-    ).then((value) {
+    )
+        .then((value) {
       const Duration(seconds: 2);
       // ReloadData();
     });
@@ -166,14 +179,11 @@ class _menulistState extends State<menulist> {
   }) =>
       Platform.isAndroid
           ? MaterialPageRoute(
-        builder: builder,
-        fullscreenDialog: fullscreenDialog,
-      )
+              builder: builder,
+              fullscreenDialog: fullscreenDialog,
+            )
           : CupertinoPageRoute(
-        builder: builder,
-        fullscreenDialog: fullscreenDialog,
-      );
+              builder: builder,
+              fullscreenDialog: fullscreenDialog,
+            );
 }
-
-
-  

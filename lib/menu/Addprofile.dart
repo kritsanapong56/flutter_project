@@ -205,7 +205,7 @@ class _AddprofileState extends State<Addprofile> {
                     children: [
                       Container(
                         child: const Text(
-                          "ถัดไป",
+                          "ตกลง",
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 25,
