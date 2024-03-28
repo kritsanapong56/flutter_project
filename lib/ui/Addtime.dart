@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/ui/Addmedicine.dart';
+import 'package:flutter_application_1/ui/Home.dart';
 import 'package:flutter_application_1/ui/freq.dart';
 
 class Addtime extends StatefulWidget {
@@ -34,12 +35,10 @@ class _AddtimeState extends State<Addtime> {
   List<TimeOfDay> selectedTimes = [];
   Future<void> saveDataToFirebase() async {
     CollectionReference medications =_firestore.collection('medicine');
-  List<Map<String, dynamic>> timesList = selectedTimes
-      .map((time) => {
-            'hour': time.hour,
-            'minute': time.minute,
-          })
-      .toList();
+  List<String> timesList = selectedTimes.map((time) {
+    // Convert TimeOfDay to a string representation of time (HH:mm)
+    return '${time.hour}:${time.minute.toString().padLeft(2, '0')}';
+  }).toList();
     Map<String, dynamic> documentData = {
       'ชื่อยา': widget.nameMedicine,
       'ปริมาณยาที่ทานต่อครั้ง': widget.medicineQuantity,
@@ -276,6 +275,9 @@ class _AddtimeState extends State<Addtime> {
                     ),
                   ),
                   onPressed: () async {
+                    Navigator.push(context,
+        MaterialPageRoute(builder: (context)
+        =>Home(data: [],)));
                     await saveDataToFirebase();
                     
                   },
