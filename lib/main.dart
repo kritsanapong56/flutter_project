@@ -5,6 +5,7 @@ import 'package:flutter_application_1/test.dart';
 import 'package:flutter_application_1/listmedicine.dart';
 import 'package:flutter_application_1/screen/homescreen.dart';
 import 'package:flutter_application_1/ui/Addtime.dart';
+import 'package:flutter_application_1/ui/Home.dart';
 
 
 void main() async {
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: listmedicine(),
+      home: Home(data: [],),
     );
   }
 }
